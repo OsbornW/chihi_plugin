@@ -1,0 +1,96 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    id 'kotlin-kapt'
+}
+
+android {
+    namespace 'com.chihi.adplugin'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.chihi.adplugin"
+        minSdk 21
+        targetSdk 35
+        versionCode 3
+        versionName "1.0.2"
+
+    }
+
+    signingConfigs {
+
+        x88 {
+            storeFile file("platform_x88.keystore")
+            storePassword "platform"
+            keyAlias "platform"
+            keyPassword "platform"
+        }
+        plugin_normal {
+            storeFile file("h713_normal.jks")
+            storePassword "936429"
+            keyAlias "chihi"
+            keyPassword "936429"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.plugin_normal
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.plugin_normal
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // 获取 versionCode 和 versionName
+            def versionCode = variant.versionCode
+            def versionName = variant.versionName
+
+            // 获取构建类型的名称（debug 或 release）
+            def buildType = variant.buildType.name
+
+            // 获取当前日期时间（格式：yyyyMMdd_HHmmss）
+            def date = new Date()
+            def formattedDate = date.format("yyyyMMdd_HHmmss")
+
+            // 设置输出的 APK 文件名，包含日期时间
+            def fileName = "ADPlugin-${versionName}-${versionCode}-${buildType}-${formattedDate}.apk"
+
+            // 设置输出路径和文件名
+            output.outputFileName = fileName
+        }
+    }
+
+}
+
+dependencies {
+    compileOnly files(
+            'libs/ad_lib_other-release.aar',
+    )
+    implementation files(
+            'libs/lib_proxy.jar',
+            'libs/7087_20240423.jar',
+            'libs/if240326_v2.10.0.jar',
+    )
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+    //implementation 'com.squareup.okhttp3:okhttp:4.12'
+    compileOnly 'androidx.media3:media3-exoplayer:1.5.1'
+    compileOnly 'com.github.codeZeng95:ad-sdk:1.0.21-SNAPSHOP'
+
+
+}
