@@ -3,7 +3,8 @@ package com.chihi.adplugin.log
 import android.util.Log
 
 fun String.printLog() {
-    if(SYSTEM_PROPERTY_LOG.systemPropertyValueBoolean())Log.e("App_Common",this)
+    //if(SYSTEM_PROPERTY_LOG.systemPropertyValueBoolean())Log.e("App_Common",this)
+    if(SYSTEM_PROPERTY_LOG.systemPropertyValueBoolean()) println(this)
 }
 
 
