@@ -12,8 +12,8 @@ android {
         applicationId "com.chihi.adplugin"
         minSdk 21
         targetSdk 35
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
 
     }
 
@@ -25,6 +25,7 @@ android {
             keyAlias "platform"
             keyPassword "platform"
         }
+
         plugin_normal {
             storeFile file("h713_normal.jks")
             storePassword "936429"
@@ -37,8 +38,6 @@ android {
         release {
             signingConfig signingConfigs.plugin_normal
             minifyEnabled false
-            shrinkResources false
-            zipAlignEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -69,7 +68,7 @@ android {
             def formattedDate = date.format("yyyyMMdd_HHmmss")
 
             // 设置输出的 APK 文件名，包含日期时间
-            def fileName = "ADPlugin-${versionName}-${versionCode}-${buildType}-${formattedDate}.apk"
+            def fileName = "plugin-${versionName}-${formattedDate}.apk"
 
             // 设置输出路径和文件名
             output.outputFileName = fileName
