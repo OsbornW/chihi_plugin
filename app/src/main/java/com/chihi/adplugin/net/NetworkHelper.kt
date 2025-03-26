@@ -270,6 +270,26 @@ object NetworkHelper {
             if (code == 200) {
                 val data = jsonResponse.get("data")
                 val bean = when {
+                    data is JSONObject && data.length() == 0 -> {
+                        // 处理空对象的情况
+                        responseType.getDeclaredConstructor().newInstance()
+                    }
+                    data is JSONArray && data.length() == 0 -> {
+                        // 处理空数组的情况
+                        if (responseType == List::class.java) {
+                            emptyList<Any>() as T
+                        } else {
+                            throw IllegalArgumentException("Unsupported data type: ${data.javaClass.simpleName}")
+                        }
+                    }
+                    data == null -> {
+                        // 处理 null 的情况
+                        if (responseType == List::class.java) {
+                            emptyList<Any>() as T
+                        } else {
+                            responseType.getDeclaredConstructor().newInstance()
+                        }
+                    }
                     data is JSONObject -> parseJsonToBean(data, responseType)
                     data is JSONArray && responseType == List::class.java -> {
                         if (itemType == null) {

