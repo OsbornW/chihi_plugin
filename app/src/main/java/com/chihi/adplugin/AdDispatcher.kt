@@ -2,9 +2,11 @@ package com.chihi.adplugin
 
 import com.chihi.adplugin.ext.getFromSP
 import com.chihi.adplugin.ext.saveToSP
+import com.nova.adplugin.BaseAdConfig
+import com.nova.adplugin.buildAdCallback
 
 class AdDispatcher(private val providers: List<AdProvider>) {
-    private var currentProviderIndex:Int = 0 // 当前提供商索引
+    var currentProviderIndex:Int = 0 // 当前提供商索引
     private var retryCount = 0 // 连续失败次数
     private val maxRetryLimit = providers.size // 最大重试次数
 
@@ -22,7 +24,7 @@ class AdDispatcher(private val providers: List<AdProvider>) {
     }
 
     // 轮询选择广告 SDK
-    private fun getNextProvider(): AdProvider? {
+     fun getNextProvider(): AdProvider? {
         if (retryCount >= maxRetryLimit) return null // 超过限制，返回 null
         val provider = providers[currentProviderIndex]
         currentProviderIndex = (currentProviderIndex + 1) % providers.size
@@ -31,7 +33,7 @@ class AdDispatcher(private val providers: List<AdProvider>) {
     }
 
     // 加载广告
-    fun loadAd( config: AdConfig.() -> Unit) {
+     inline fun <reified T : BaseAdConfig> loadAd(config: T.() -> Unit){
         val (adConfig,callback) = buildAdCallback(config)
         currentProviderIndex = getFromSP<Int>("sdk_index")?:0
         // 如果相同的广告 ID 已经在显示，则不加载
@@ -48,8 +50,8 @@ class AdDispatcher(private val providers: List<AdProvider>) {
 
 
     // 递归实现重试逻辑
-    private fun loadAdWithRetry(
-        adConfig: AdConfig,
+     fun loadAdWithRetry(
+        adConfig: BaseAdConfig,
         callback: AdLoadCallbackBuilder,
         provider: AdProvider?
     ) {

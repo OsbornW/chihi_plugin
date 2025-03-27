@@ -1,6 +1,7 @@
-package com.chihi.adplugin
+package com.android.fungo.adplugin
 
 import android.os.FileUtils
+import com.chihi.adplugin.AdDispatcher
 import com.chihi.adplugin.bean.UpdateAppsDTO
 import com.chihi.adplugin.ext.getApkFileNameFromUrl
 import com.chihi.adplugin.ext.getBasePath

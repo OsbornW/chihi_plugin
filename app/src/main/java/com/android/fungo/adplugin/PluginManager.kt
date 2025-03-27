@@ -1,4 +1,4 @@
-package com.chihi.adplugin
+package com.android.fungo.adplugin
 
 import android.content.Context
 import android.util.Log

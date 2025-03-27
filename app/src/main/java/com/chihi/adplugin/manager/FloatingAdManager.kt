@@ -3,19 +3,17 @@ package com.chihi.adplugin.manager
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.RelativeLayout
-import com.chihi.adplugin.AdConfig
-import com.chihi.adplugin.Position
 import com.chihi.adplugin.appContext
-import com.chihi.adplugin.buildAdCallback
 import com.chihi.adplugin.ext.otherwise
 import com.chihi.adplugin.ext.yes
 import com.chihi.adplugin.view.AdViewSDKB
-import com.sjkj.ad.AdView
+import com.nova.adplugin.BaseAdConfig
+import com.nova.adplugin.Position
+import com.nova.adplugin.buildAdCallback
 import com.sjkj.ad.AdViewDynamic
 import java.lang.ref.WeakReference
 
@@ -26,7 +24,7 @@ object FloatingAdManager {
    // private var adJob: Job? = null
     var videoAdView:WeakReference<AdViewSDKB>?=null
 
-    var mAdData: WeakReference<AdConfig>?=null
+    var mAdData: WeakReference<BaseAdConfig>?=null
     var isCanSkip:Boolean=false
 
 
@@ -34,7 +32,7 @@ object FloatingAdManager {
     private val handler = Handler(Looper.getMainLooper())
 
     // 显示悬浮广告
-    fun showFloatingAD(config: AdConfig.() -> Unit) {
+    fun showFloatingAD(config: BaseAdConfig.() -> Unit) {
 
         // 如果当前广告未显示完毕，不能再显示新广告
         if (floatingAdViewRef?.get() != null) {

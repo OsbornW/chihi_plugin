@@ -1,15 +1,12 @@
 package com.chihi.adplugin.adapter
 
 import android.content.Context
-import android.util.Log
 import com.chihi.ad_lib.AdSdk
-import com.chihi.adplugin.AdConfig
 import com.chihi.adplugin.AdIds
 import com.chihi.adplugin.AdProvider
-import com.chihi.adplugin.R
 import com.chihi.adplugin.appContext
-import com.chihi.adplugin.buildAdCallback
-import com.chihi.adplugin.ext.stringValueWithFormat
+import com.nova.adplugin.BaseAdConfig
+import com.nova.adplugin.buildAdCallback
 
 class AdSdkAProvider : AdProvider {
 
@@ -21,7 +18,7 @@ class AdSdkAProvider : AdProvider {
     /**
      * 直接通过AdId来区分如何展示广告
      */
-    override fun loadAd( config: AdConfig.() -> Unit) {
+    override fun loadAd( config: BaseAdConfig.() -> Unit) {
         val (adConfig,callback) = buildAdCallback(config)
         when(adConfig.adId){
             AdIds.AD_ID_SPLASH->{

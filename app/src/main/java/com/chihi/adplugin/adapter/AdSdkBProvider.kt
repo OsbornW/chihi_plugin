@@ -2,11 +2,11 @@ package com.chihi.adplugin.adapter
 
 import android.app.Application
 import android.content.Context
-import com.chihi.adplugin.AdConfig
 import com.chihi.adplugin.AdIds
 import com.chihi.adplugin.AdProvider
-import com.chihi.adplugin.buildAdCallback
 import com.chihi.adplugin.manager.FloatingAdManager
+import com.nova.adplugin.BaseAdConfig
+import com.nova.adplugin.buildAdCallback
 import com.sjkj.ad.AdManager
 
 class AdSdkBProvider : AdProvider {
@@ -18,7 +18,7 @@ class AdSdkBProvider : AdProvider {
         AdManager.getInstance().init(context.applicationContext as Application, config)
     }
 
-    override fun loadAd( config: AdConfig.() -> Unit) {
+    override fun loadAd( config: BaseAdConfig.() -> Unit) {
         val (adConfig,callback) = buildAdCallback(config)
         when(adConfig.adId){
             AdIds.AD_ID_SPLASH->{
