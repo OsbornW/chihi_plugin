@@ -1,6 +1,6 @@
-package com.chihi.adplugin.ext
+package com.nova.adplugin.ext
 
-import com.chihi.adplugin.log.printLog
+import com.nova.adplugin.log.printLog
 import java.io.IOException
 
 fun String.installApk(): Boolean {

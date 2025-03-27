@@ -1,4 +1,4 @@
-package com.chihi.adplugin.ext
+package com.nova.adplugin.ext
 
 import android.app.PendingIntent
 import android.content.ActivityNotFoundException
@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.chihi.adplugin.appContext
+import com.nova.adplugin.base.appContext
 import java.io.File
 import java.io.FileInputStream
 

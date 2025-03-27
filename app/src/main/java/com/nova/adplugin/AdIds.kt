@@ -1,4 +1,4 @@
-package com.chihi.adplugin
+package com.nova.adplugin
 
 object AdIds {
     const val AD_ID_POPUP = "popup_ad_id"

@@ -1,6 +1,6 @@
-package com.chihi.adplugin.ext
+package com.nova.adplugin.ext
 
-import com.chihi.adplugin.appContext
+import com.nova.adplugin.base.appContext
 
 
 fun Int.colorValue(): Int = appContext.resources.getColor(this, null)

@@ -1,8 +1,8 @@
-package com.codeZeng.lib_autorun.ext
+package com.nova.adplugin.ext
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import com.chihi.adplugin.appContext
+import com.nova.adplugin.base.appContext
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
