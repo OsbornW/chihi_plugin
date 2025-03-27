@@ -8,4 +8,13 @@ object AdPlugin :AdPluginBase(){
         super.loadAd(config) // 调用基类方法
         // 子类特有逻辑
     }
+
+    fun test1(){
+        println("打印了Test1")
+    }
+
+    override fun initialize() {
+        println("我是子类的初始化initialize")
+        super.initialize()
+    }
 }

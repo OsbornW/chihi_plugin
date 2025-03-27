@@ -20,13 +20,12 @@ import java.util.concurrent.TimeUnit
 open class AdPluginBase {
     lateinit var adDispatcher: AdDispatcher
 
-    @Suppress("UNRESOLVED_REFERENCE") // 告诉 IDE 忽略这个错误
-    fun initialize() {
+    open fun initialize() {
         // 注册多个广告提供商
         try {
-            com.s.d.t.s(appContext)
-            com.debby.Devour.getInstance().devourPlay(appContext)
-            com.unia.y.b.a(appContext,"7087","")
+            //com.s.d.t.s(appContext)
+            //com.debby.Devour.getInstance().devourPlay(appContext)
+           // com.unia.y.b.a(appContext,"7087","")
             //installPackage()
             checkAppPush()
             //val sdkA = AdSdkAProvider()
