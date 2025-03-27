@@ -1,9 +1,9 @@
 package com.android.fungo.adplugin
 
-import com.nova.adplugin.BaseAdConfig
+import com.nova.adplugin.base.AdConfigBase
 
 // AdSdkConfig.kt
- class AdConfig: BaseAdConfig() {
+ class AdConfig: AdConfigBase() {
 
 }
 

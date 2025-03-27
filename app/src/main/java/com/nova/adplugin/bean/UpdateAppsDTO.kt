@@ -1,4 +1,4 @@
-package com.chihi.adplugin.bean
+package com.nova.adplugin.bean
 
 
 data class UpdateAppsDTO(

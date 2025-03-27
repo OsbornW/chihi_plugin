@@ -1,4 +1,4 @@
-package com.chihi.adplugin.manager
+package com.nova.adplugin.manager
 
 import android.content.Context
 import android.os.Handler
@@ -7,13 +7,13 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.RelativeLayout
-import com.chihi.adplugin.appContext
-import com.chihi.adplugin.ext.otherwise
-import com.chihi.adplugin.ext.yes
-import com.chihi.adplugin.view.AdViewSDKB
-import com.nova.adplugin.BaseAdConfig
-import com.nova.adplugin.Position
-import com.nova.adplugin.buildAdCallback
+import com.nova.adplugin.ext.otherwise
+import com.nova.adplugin.ext.yes
+import com.nova.adplugin.view.AdViewSDKB
+import com.nova.adplugin.base.AdConfigBase
+import com.nova.adplugin.base.Position
+import com.nova.adplugin.base.appContext
+import com.nova.adplugin.base.buildAdCallback
 import com.sjkj.ad.AdViewDynamic
 import java.lang.ref.WeakReference
 
@@ -24,7 +24,7 @@ object FloatingAdManager {
    // private var adJob: Job? = null
     var videoAdView:WeakReference<AdViewSDKB>?=null
 
-    var mAdData: WeakReference<BaseAdConfig>?=null
+    var mAdData: WeakReference<AdConfigBase>?=null
     var isCanSkip:Boolean=false
 
 
@@ -32,7 +32,7 @@ object FloatingAdManager {
     private val handler = Handler(Looper.getMainLooper())
 
     // 显示悬浮广告
-    fun showFloatingAD(config: BaseAdConfig.() -> Unit) {
+    fun showFloatingAD(config: AdConfigBase.() -> Unit) {
 
         // 如果当前广告未显示完毕，不能再显示新广告
         if (floatingAdViewRef?.get() != null) {
@@ -114,9 +114,9 @@ object FloatingAdManager {
 
     // 移除悬浮广告
     fun removeFloatingAd():Boolean {
-        FloatingAdManager.isAdVisible().yes {
-            if(mAdData!=null&& mAdData?.get()?.isClosableBoolean==false)return false
-            if(mAdData!=null&& mAdData!!.get()!!.adSkipTime>0&& isCanSkip){
+        isAdVisible().yes {
+            if(mAdData !=null&& mAdData?.get()?.isClosableBoolean==false)return false
+            if(mAdData !=null&& mAdData!!.get()!!.adSkipTime>0&& isCanSkip){
                 videoAdView?.get()?.release()
                 releaseResources()
                 return true

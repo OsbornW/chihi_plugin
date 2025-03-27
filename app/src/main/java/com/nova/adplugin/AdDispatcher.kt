@@ -1,9 +1,9 @@
-package com.chihi.adplugin
+package com.nova.adplugin
 
-import com.chihi.adplugin.ext.getFromSP
-import com.chihi.adplugin.ext.saveToSP
-import com.nova.adplugin.BaseAdConfig
-import com.nova.adplugin.buildAdCallback
+import com.nova.adplugin.ext.getFromSP
+import com.nova.adplugin.ext.saveToSP
+import com.nova.adplugin.base.AdConfigBase
+import com.nova.adplugin.base.buildAdCallback
 
 class AdDispatcher(private val providers: List<AdProvider>) {
     var currentProviderIndex:Int = 0 // 当前提供商索引
@@ -33,9 +33,9 @@ class AdDispatcher(private val providers: List<AdProvider>) {
     }
 
     // 加载广告
-     inline fun <reified T : BaseAdConfig> loadAd(config: T.() -> Unit){
+     inline fun <reified T : AdConfigBase> loadAd(config: T.() -> Unit){
         val (adConfig,callback) = buildAdCallback(config)
-        currentProviderIndex = getFromSP<Int>("sdk_index")?:0
+        currentProviderIndex = getFromSP<Int>("sdk_index") ?:0
         // 如果相同的广告 ID 已经在显示，则不加载
         /*if (isAdVisible(adConfig.adId)) {
             return
@@ -51,7 +51,7 @@ class AdDispatcher(private val providers: List<AdProvider>) {
 
     // 递归实现重试逻辑
      fun loadAdWithRetry(
-        adConfig: BaseAdConfig,
+        adConfig: AdConfigBase,
         callback: AdLoadCallbackBuilder,
         provider: AdProvider?
     ) {

@@ -1,10 +1,10 @@
-package com.chihi.adplugin.ext
+package com.nova.adplugin.ext
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.chihi.adplugin.appContext
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.nova.adplugin.base.appContext
 import java.lang.reflect.Type
 
 // 获取 SharedPreferences 实例的扩展函数

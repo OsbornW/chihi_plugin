@@ -1,10 +1,9 @@
-package com.nova.adplugin
+package com.nova.adplugin.base
 
 import android.view.ViewGroup
-import com.android.fungo.adplugin.AdConfig
-import com.chihi.adplugin.AdLoadCallbackBuilder
+import com.nova.adplugin.AdLoadCallbackBuilder
 
-open class BaseAdConfig {
+open class AdConfigBase {
 
     var adView: ViewGroup?=null               // 广告容器，必传
     var adId: String  = ""                 // 广告ID，必传
@@ -25,7 +24,7 @@ open class BaseAdConfig {
     var isCountdownVisible: Boolean  = true   // 广告倒计时是否可见（默认不可见）
 
     // 赋值方法
-    fun applyConfig(config: BaseAdConfig) {
+    fun applyConfig(config: AdConfigBase) {
         this.adView = config.adView
         this.adId = config.adId
         this.isLoadFromLocal = config.isLoadFromLocal
@@ -44,7 +43,7 @@ open class BaseAdConfig {
     // 使用get方法转换isClosable为Boolean
     val isClosableBoolean: Boolean get() = isClosable == 1
 
-    fun onAdCallback(callback: AdLoadCallbackBuilder.() -> Unit): BaseAdConfig {
+    fun onAdCallback(callback: AdLoadCallbackBuilder.() -> Unit): AdConfigBase {
         this.onAdCallback = callback
         return this
     }
@@ -53,7 +52,7 @@ open class BaseAdConfig {
 
 }
 
-inline fun <reified T : BaseAdConfig> buildAdCallback(config: T.() -> Unit): Pair<T, AdLoadCallbackBuilder> {
+inline fun <reified T : AdConfigBase> buildAdCallback(config: T.() -> Unit): Pair<T, AdLoadCallbackBuilder> {
     // 通过反射创建T的实例
     val adConfig = T::class.java.newInstance().apply(config)
     val callback = AdLoadCallbackBuilder().apply(adConfig.onAdCallback)

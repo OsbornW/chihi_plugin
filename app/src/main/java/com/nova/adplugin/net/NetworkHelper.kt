@@ -1,6 +1,6 @@
-package com.chihi.adplugin.net
+package com.nova.adplugin.net
 
-import com.chihi.adplugin.log.printLog
+import com.nova.adplugin.log.printLog
 import org.json.JSONObject
 import org.json.JSONArray
 import java.io.BufferedReader

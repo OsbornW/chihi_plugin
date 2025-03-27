@@ -1,27 +1,20 @@
-package com.chihi.adplugin.view
+package com.nova.adplugin.view
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.KeyEvent
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.media3.common.Player.STATE_IDLE
-import com.chihi.ad_lib.bean.AdData
-import com.chihi.adplugin.AdConfig
-import com.chihi.adplugin.AdLoadCallback
+import com.nova.adplugin.AdLoadCallback
 import com.chihi.adplugin.R
-import com.chihi.adplugin.appContext
-import com.chihi.adplugin.ext.stringValue
-import com.chihi.adplugin.ext.stringValueWithFormat
-import com.chihi.adplugin.manager.FloatingAdManager
-import com.nova.adplugin.BaseAdConfig
-import com.sjkj.ad.AdManager
+import com.nova.adplugin.ext.stringValue
+import com.nova.adplugin.ext.stringValueWithFormat
+import com.nova.adplugin.base.AdConfigBase
 import com.sjkj.ad.AdPlayManager
 import com.sjkj.ad.AdView
 import com.sjkj.ad.listener.AdPlayListener
@@ -29,7 +22,7 @@ import com.sjkj.ad.listener.AdPlayListener
 // 视频广告视图
 class AdViewSDKB(
     context: Context,
-    adData: BaseAdConfig,
+    adData: AdConfigBase,
     mVideoView: AdView,
     viewGroup: ViewGroup? = null,
     val callback: AdLoadCallback? = null,
@@ -79,7 +72,7 @@ class AdViewSDKB(
 
     }
 
-    private fun addViews(adData: BaseAdConfig) {
+    private fun addViews(adData: AdConfigBase) {
         // 创建并初始化倒计时 TextView
         if (adData.isCountdownVisible) countdownTextView = createTextView(context)
 
@@ -109,7 +102,7 @@ class AdViewSDKB(
 
     var displayDuration = 10000L
     var manager: AdPlayManager? = null
-    private fun initializePlayer(adData: BaseAdConfig) {
+    private fun initializePlayer(adData: AdConfigBase) {
 
         //videoView = VideoView(context)
         // 将 PlayerView 添加到当前 FrameLayout 中

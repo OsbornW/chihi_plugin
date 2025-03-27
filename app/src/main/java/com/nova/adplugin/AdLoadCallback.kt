@@ -1,4 +1,4 @@
-package com.chihi.adplugin
+package com.nova.adplugin
 
 interface AdLoadCallback {
 

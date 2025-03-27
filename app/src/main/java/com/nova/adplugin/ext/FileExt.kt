@@ -1,7 +1,7 @@
-package com.chihi.adplugin.ext
+package com.nova.adplugin.ext
 
 import android.util.Log
-import com.chihi.adplugin.appContext
+import com.nova.adplugin.base.appContext
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest

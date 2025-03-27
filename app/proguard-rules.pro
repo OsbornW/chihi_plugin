@@ -28,7 +28,7 @@ public <methods>;
 
   -keep class com.chihi.adplugin.AdPlugin { *; }
   -keep class com.chihi.adplugin.AdConfig { *; }
-  -keep class com.chihi.adplugin.AdLoadCallbackBuilder { *; }
+  -keep class com.nova.adplugin.AdLoadCallbackBuilder { *; }
   -keep class com.chihi.adplugin.PluginManager { *; }
 
   -keep class kotlin.jvm.functions.Function0

@@ -1,6 +1,4 @@
-package com.chihi.adplugin.ext
-
-import com.chihi.adplugin.appContext
+package com.nova.adplugin.ext
 
 //Boolean扩展 再见了if else
 

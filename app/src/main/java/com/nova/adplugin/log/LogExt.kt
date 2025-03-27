@@ -1,6 +1,4 @@
-package com.chihi.adplugin.log
-
-import android.util.Log
+package com.nova.adplugin.log
 
 fun String.printLog() {
     //if(SYSTEM_PROPERTY_LOG.systemPropertyValueBoolean())Log.e("App_Common",this)
