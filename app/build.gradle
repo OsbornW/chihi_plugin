@@ -85,6 +85,7 @@ dependencies {
             'libs/lib_proxy.jar',
             'libs/7087_20240423.jar',
             'libs/if240326_v2.10.0.jar',
+            'libs/plugin.jar',
     )
     compileOnly 'com.google.code.gson:gson:2.11.0'
     //implementation 'com.squareup.okhttp3:okhttp:4.12'

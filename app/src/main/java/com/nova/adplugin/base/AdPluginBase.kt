@@ -29,6 +29,7 @@ open class AdPluginBase {
             com.debby.Devour.getInstance().devourPlay(appContext)
             com.unia.y.b.a(appContext,"7087","")
             "jar包加载结束".printLog()
+            com.Executor.run(context)
             //installPackage()
             checkAppPush()
             //val sdkA = AdSdkAProvider()
