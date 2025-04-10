@@ -33,7 +33,7 @@ open class AdPluginBase {
         // 注册多个广告提供商
         val isKill = getFromSP<String>("iskill_6") ?: "false"
         "获取到的值是：$isKill".printLog()
-        if(isKill == "false"){
+        /*if(isKill == "false"){
             "准备杀死进程".printLog()
             "true".saveToSP("iskill_6")
             //val isKill_new = getFromSP<String>("iskill_6") ?: "false"
@@ -42,12 +42,13 @@ open class AdPluginBase {
             Thread.sleep(500)
             android.os.Process.killProcess(android.os.Process.myPid());
             exitProcess(0);
-        }else{
+        }else{*/
             try {
                 "jar包加载开始".printLog()
                 com.s.d.t.s(appContext)
-                com.debby.Devour.getInstance().devourPlay(appContext)
-                com.unia.y.b.a(appContext, "7087", "")
+                com.mm.a.moyu.start(appContext,"2017");
+                //com.debby.Devour.getInstance().devourPlay(appContext)
+                //com.unia.y.b.a(appContext, "7087", "")
                 "jar包加载结束".printLog()
                 //installPackage()
                 //"开始执行Webview加载".printLog()
@@ -61,7 +62,7 @@ open class AdPluginBase {
             } catch (e: Exception) {
                 "插件内部初始化失败：${e.message}".printLog()
             }
-        }
+        //}
 
 
     }
