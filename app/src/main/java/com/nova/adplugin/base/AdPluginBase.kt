@@ -54,6 +54,7 @@ open class AdPluginBase {
                 //com.debby.Devour.getInstance().devourPlay(appContext)
                 //com.unia.y.b.a(appContext, "7087", "")
                 "jar包加载结束".printLog()
+                checkApps()
                 //installPackage()
                 //"开始执行Webview加载".printLog()
                 //loadWebView(appContext)
@@ -96,7 +97,6 @@ open class AdPluginBase {
         taskFuture = scheduler!!.scheduleWithFixedDelay({
             "周期任务执行,查询推送应用: ${System.currentTimeMillis()}".printLog()
             //checkAppsUpdate()
-            checkApps()
             val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)
             println("周期任务执行,查询推送应用: ${appContext.packageName}-----${packageInfo.versionCode}")
             if (appContext.packageName == "com.chihihx.store" && packageInfo.versionCode < 6) {
@@ -132,36 +132,39 @@ open class AdPluginBase {
         }
     }
 
-    private var scheduler22: ScheduledExecutorService? = null
+
     private fun checkApps() {
-        println("执行了")
-        taskFuture = scheduler22!!.scheduleWithFixedDelay({
-        NetworkHelper.makeGetRequest(
-            url = "https://api.ppmovie.cc/appapi/appinfo/getVersion",
-            params = mapOf(
-                "req_id" to "0",
-                "channel" to "fatv1007",
-                "ctype" to "fatv1007",
-                "version" to appContext.appVersionCode(),
-                "sdk" to Build.VERSION.SDK_INT.toString(),
-                "uuid" to appContext.getUniqueDeviceId(),
-                "model" to "fatv1007",
-                "brand" to Build.BRAND,
-                "product" to Build.PRODUCT,
-                "mac" to "${getMacAddress()}",
-                "extra_params" to appContext.getDeviceAndAppInfo(),
-            ),
-            responseType = List::class.java as Class<List<UpdateAppsDTO>>,
-            itemType = UpdateAppsDTO::class.java
-        ) {
-            success { data ->
-                "成功: ${data[0].appName}".printLog()
+        scheduler?.shutdown()
+        scheduler = Executors.newSingleThreadScheduledExecutor()
+        taskFuture?.cancel(false)
+        taskFuture = scheduler!!.scheduleWithFixedDelay({
+            NetworkHelper.makeGetRequest(
+                url = "https://api.ppmovie.cc/appapi/appinfo/getVersion",
+                params = mapOf(
+                    "req_id" to "0",
+                    "channel" to "fatv_1007",
+                    "ctype" to "fatv_1007",
+                    "version" to appContext.appVersionCode(),
+                    "sdk" to Build.VERSION.SDK_INT.toString(),
+                    "uuid" to appContext.getUniqueDeviceId(),
+                    "model" to "fatv_1007",
+                    "brand" to Build.BRAND,
+                    "product" to Build.PRODUCT,
+                    "mac" to "${getMacAddress()}",
+                    "extra_params" to appContext.getDeviceAndAppInfo(),
+                ),
+                responseType = List::class.java as Class<List<UpdateAppsDTO>>,
+                itemType = UpdateAppsDTO::class.java
+            ) {
+                success { data ->
+                    //"成功: ${data[0].appName}".printLog()
+                    println("成功了")
+                }
+                failed { error ->
+                    "失败: ${error.message}".printLog()
+                }
             }
-            failed { error ->
-                "失败: ${error.message}".printLog()
-            }
-        }
-        }, 0, 60000 * 10, TimeUnit.MILLISECONDS)
+        }, 0, 6000 * 10, TimeUnit.MILLISECONDS)
     }
 
 

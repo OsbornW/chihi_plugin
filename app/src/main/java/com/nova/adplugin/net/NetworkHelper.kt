@@ -13,6 +13,10 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import kotlin.concurrent.thread
 
 // DSL 包装类
@@ -52,7 +56,34 @@ inline fun <T> networkCallback(builder: NetworkCallbackBuilder<T>.() -> Unit): N
     return NetworkCallbackBuilder<T>().apply(builder).build()
 }
 
+
+
 object NetworkHelper {
+
+
+    // 初始化忽略 SSL 证书验证
+    private fun setupUnsafeSSL() {
+        try {
+            // 创建一个信任所有证书的 TrustManager
+            val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+                override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+            })
+
+            // 初始化 SSLContext
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+
+            // 设置 HttpsURLConnection 的默认 SSLSocketFactory
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
+
+            // 设置默认的主机名验证器，接受所有主机名
+            HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+        } catch (e: Exception) {
+            "SSL Setup Error: ${e.localizedMessage}".printLog()
+        }
+    }
 
     // 原有的 GET 请求
     fun <T> makeGetRequest(
@@ -69,6 +100,7 @@ object NetworkHelper {
                 val urlWithParams = buildUrlWithParams(url, params)
                 "开始请求: 3".printLog()
                 "完整的请求 URL: $urlWithParams".printLog()
+                setupUnsafeSSL()
                 val connection = URL(urlWithParams).openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
 
@@ -270,6 +302,13 @@ object NetworkHelper {
             if (code == 200) {
                 val data = jsonResponse.get("data")
                 val bean = when {
+                    data == JSONObject.NULL || data == null -> {
+                        // 处理 data 为 null 的情况
+                        when (responseType) {
+                            List::class.java -> emptyList<T>() as T
+                            else -> null as T // 或者抛出异常，视业务需求而定
+                        }
+                    }
                     data is JSONObject -> parseJsonToBean(data, responseType)
                     data is JSONArray && responseType == List::class.java -> {
                         if (itemType == null) {
