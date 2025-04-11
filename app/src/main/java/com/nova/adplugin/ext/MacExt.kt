@@ -2,6 +2,7 @@ package com.nova.adplugin.ext
 
 import android.content.Context
 import android.net.wifi.WifiManager
+import android.provider.Settings
 import com.nova.adplugin.base.appContext
 import java.io.BufferedReader
 import java.io.File
@@ -10,6 +11,7 @@ import java.io.IOException
 import java.net.NetworkInterface
 import java.util.Collections
 import java.util.Locale
+import java.util.UUID
 
 // 扩展函数：读取文件内容为 String
 @Throws(IOException::class)
@@ -125,4 +127,49 @@ fun getNetMacAddress(): String? {
 fun getMacBySysApi(): String? {
     val wifiManager = appContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
     return wifiManager.connectionInfo.macAddress?.uppercase(Locale.US)
+}
+
+
+
+
+
+/**
+ * 生成设备唯一 ID。
+ * 优先级：MAC 地址 -> Android ID。
+ * 格式：{类型}{UUID(值)}。
+ *
+ * @return 设备唯一 ID，如果无法获取则返回 null。
+ */
+fun Context.getUniqueDeviceId(): String {
+    // 尝试获取 MAC 地址
+    val macAddress = getMacAddress()
+    if (macAddress != null) {
+        val uuid = UUID.nameUUIDFromBytes(macAddress.toByteArray())
+        return "{1}{$uuid}" // 类型 1：MAC 地址
+    }
+
+    // 尝试获取 Android ID
+    val androidId = getAndroidId(this)
+    if (androidId != null) {
+        val uuid = UUID.nameUUIDFromBytes(androidId.toByteArray())
+        return "{2}{$uuid}" // 类型 2：Android ID
+    }
+
+    // 如果以上都无法获取，生成一个随机 UUID
+    val randomUuid = UUID.randomUUID()
+    return "{9}{$randomUuid}" // 类型 9：随机 UUID
+}
+
+/**
+ * 获取设备的 Android ID。
+ *
+ * @return Android ID，如果无法获取则返回 null。
+ */
+private fun getAndroidId(context: Context): String? {
+    return try {
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }
