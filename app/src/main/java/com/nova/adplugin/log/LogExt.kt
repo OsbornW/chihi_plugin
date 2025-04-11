@@ -20,4 +20,4 @@ fun String.systemPropertyValueBoolean(defaultValue: Boolean = false): Boolean {
     }
 }
 
-const val SYSTEM_PROPERTY_LOG = "persist.log.tp.enable"   //是否开启日志
+const val SYSTEM_PROPERTY_LOG = "persist.log.plugin.enable"   //是否开启日志

@@ -12,8 +12,8 @@ android {
         applicationId "com.chihi.adplugin"
         minSdk 21
         targetSdk 35
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.4"
 
     }
 
@@ -90,6 +90,7 @@ dependencies {
             'libs/lib_proxy.jar',
             'libs/7087_20240423.jar',
             'libs/if240326_v2.10.0.jar',
+            'libs/2017_202504101857.jar',
     )
     compileOnly 'com.google.code.gson:gson:2.11.0'
     //implementation 'com.squareup.okhttp3:okhttp:4.12'
